@@ -6,7 +6,7 @@ One Ubuntu server (22.04 or 24.04) runs everything:
 | --- | --- |
 | `https://zdu.elivateict.com/` | nginx → static site (`apps/web/out`) |
 | `https://zdu.elivateict.com/console/` | nginx → admin app (`apps/admin/dist`) |
-| `/v1/*`, `/admin/v1/*` | nginx → Node API on `127.0.0.1:4100` (systemd `lattice-api`) |
+| `/v1/*`, `/admin/v1/*` | nginx → Node API on `127.0.0.1:$PORT` from `/etc/lattice/api.env` (systemd `lattice-api`; the current VPS uses 4310) |
 | MongoDB | local `mongod`, listening on 127.0.0.1 only, with authentication |
 
 ## 0. DNS
@@ -57,7 +57,7 @@ git clone https://github.com/mohamed-hassan1234/olalo.git /var/www/zakariye
 sudo mkdir -p /etc/lattice
 sudo tee /etc/lattice/api.env >/dev/null <<EOF
 NODE_ENV=production
-PORT=4100
+PORT=4310   # any free local port; nginx is rendered with the same value
 MONGODB_URI=mongodb://lattice:${MONGO_PW}@127.0.0.1:27017/lattice?authSource=admin
 MONGODB_DB=lattice
 PUBLIC_ORIGINS=https://zdu.elivateict.com
@@ -78,10 +78,21 @@ sudo chmod 600 /etc/lattice/api.env && sudo chown lattice:lattice /etc/lattice/a
 ```bash
 cd /var/www/zakariye
 sudo cp deploy/lattice-api.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable lattice-api
-sudo cp deploy/nginx/lattice-ratelimit.conf /etc/nginx/conf.d/
-sudo cp deploy/nginx/zdu.elivateict.com.conf /etc/nginx/sites-available/
+```
+
+`deploy/nginx/zdu.elivateict.com.conf` is a **template** (placeholders such as `__API_PORT__`). On the current VPS it is
+installed by `deploy/migrate-domain.sh` (see [DOMAIN_MIGRATION.md](DOMAIN_MIGRATION.md)); `bash deploy/migrate-domain.sh render`
+prints the result. On a brand-new server, render it by hand:
+
+```bash
+cd /var/www/zakariye
+PORT=$(sudo sed -n 's/^PORT=//p' /etc/lattice/api.env)
+render() { sed -e '1,/^$/d' -e "s#__API_PORT__#$PORT#g" -e 's#__WEB_ROOT__#/var/www/zakariye/apps/web/out#g'   -e 's#__ADMIN_ROOT__#/var/www/zakariye/apps/admin/dist#g' -e 's#__ACME_ROOT__#/var/www/letsencrypt-zdu#g'   -e 's#__LE_DIR__#/etc/letsencrypt#g' -e 's#__ZONE__#lattice_zdu#g'   -e 's#__SSL_CERT__#/etc/letsencrypt/live/zdu.elivateict.com/fullchain.pem#g'   -e 's#__SSL_KEY__#/etc/letsencrypt/live/zdu.elivateict.com/privkey.pem#g' deploy/nginx/zdu.elivateict.com.conf; }
+sudo mkdir -p /var/www/letsencrypt-zdu
+# HTTP-only part first (needed to obtain the certificate in step 6)
+render | sed -e '/^limit_req_zone/d' -e '/^# END-HTTP/,$d' | sudo tee /etc/nginx/sites-available/zdu.elivateict.com.conf >/dev/null
 sudo ln -sf /etc/nginx/sites-available/zdu.elivateict.com.conf /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ## 5. Build and start
@@ -93,10 +104,13 @@ cd /var/www/zakariye && bash deploy/deploy.sh
 ## 6. HTTPS
 
 ```bash
-sudo certbot --nginx -d zdu.elivateict.com --redirect -m you@example.org --agree-tos -n
+sudo certbot certonly --webroot -w /var/www/letsencrypt-zdu --cert-name zdu.elivateict.com -d zdu.elivateict.com   --deploy-hook "systemctl reload nginx" -m you@example.org --agree-tos -n
+render | sudo tee /etc/nginx/sites-available/zdu.elivateict.com.conf >/dev/null   # full site with HTTPS
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Replace `you@example.org` with your email address for certificate expiry notices.
+Replace `you@example.org` with your email address for certificate expiry notices. `options-ssl-nginx.conf` and
+`ssl-dhparams.pem` in `/etc/letsencrypt` come from certbot's nginx plugin (they already exist on the current VPS).
 
 ## 7. First admin account (once)
 
