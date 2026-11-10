@@ -26,4 +26,5 @@ sudo systemctl restart lattice-api
 sudo nginx -t && sudo systemctl reload nginx
 
 sleep 2
-curl -fsS http://127.0.0.1:4000/v1/health && echo && echo "==> Deployed: $DOMAIN  (admin: $DOMAIN/console/)"
+PORT=$(sudo grep -E "^PORT=" /etc/lattice/api.env | cut -d= -f2)
+curl -fsS "http://127.0.0.1:${PORT:-4100}/v1/health" && echo && echo "==> Deployed: $DOMAIN  (admin: $DOMAIN/console/)"

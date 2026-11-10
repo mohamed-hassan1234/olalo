@@ -6,7 +6,7 @@ One Ubuntu server (22.04 or 24.04) runs everything:
 | --- | --- |
 | `https://zakariye.elivateict.com/` | nginx → static site (`apps/web/out`) |
 | `https://zakariye.elivateict.com/console/` | nginx → admin app (`apps/admin/dist`) |
-| `/v1/*`, `/admin/v1/*` | nginx → Node API on `127.0.0.1:4000` (systemd `lattice-api`) |
+| `/v1/*`, `/admin/v1/*` | nginx → Node API on `127.0.0.1:4100` (systemd `lattice-api`) |
 | MongoDB | local `mongod`, listening on 127.0.0.1 only, with authentication |
 
 ## 0. DNS
@@ -55,7 +55,7 @@ git clone https://github.com/mohamed-hassan1234/olalo.git /var/www/zakariye
 sudo mkdir -p /etc/lattice
 sudo tee /etc/lattice/api.env >/dev/null <<EOF
 NODE_ENV=production
-PORT=4000
+PORT=4100
 MONGODB_URI=mongodb://lattice:${MONGO_PW}@127.0.0.1:27017/lattice?authSource=admin
 MONGODB_DB=lattice
 PUBLIC_ORIGINS=https://zakariye.elivateict.com
