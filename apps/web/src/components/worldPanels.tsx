@@ -160,6 +160,8 @@ function MissionCard({ m, index, n, dir, onGo }: { m: Milestone; index: number; 
       className="glass pointer-events-auto relative w-full max-w-[420px] touch-pan-y overflow-hidden rounded-2xl p-5 select-none"
       style={{ transform: `translateX(${dx}px)`, transition: start.current === null ? 'transform 220ms var(--ease-ui)' : 'none', borderColor: `${WORLD_HEX[m.world]}99` }}
       onPointerDown={(e) => {
+        // Taps on the card's own buttons must stay taps (pointer capture would swallow their clicks).
+        if ((e.target as HTMLElement).closest('button')) return;
         start.current = e.clientX;
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       }}

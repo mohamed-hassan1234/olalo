@@ -61,21 +61,12 @@ test('full journey through all ten scenes', async ({ page }) => {
   await shot(page, '04a-waxbarasho');
   await page.getByTestId('station-code-lab').click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog')).toContainText(/NUXUR TUSAALE|SAMPLE CONTENT/);
+  await expect(page.getByRole('dialog')).toContainText(/Qabyo|Draft/);
   await page.waitForTimeout(1800);
   await shot(page, '04b-waxbarasho-station');
   await page.getByTestId('next-station').click();
   await page.keyboard.press('Escape');
   await page.getByTestId('back-hub').click();
-
-  // Feedback is offered once after the first world visit (non-modal).
-  await expect(page.getByTestId('feedback')).toBeVisible();
-  await page.getByTestId('fb-open').click();
-  await page.getByTestId('fb-qayb').click();
-  await page.getByTestId('fb-send').click();
-  await expect(page.getByTestId('feedback')).toContainText(/Mahadsanid|Thank you/);
-  await shot(page, '09-feedback');
-  await expect(page.getByTestId('feedback')).toHaveCount(0, { timeout: 8000 });
 
   // Scene 05 — Midnimo, network lights up.
   await page.getByTestId('orbit-next').click();
@@ -98,10 +89,22 @@ test('full journey through all ten scenes', async ({ page }) => {
   await page.getByTestId('open-roadmap').click();
   await page.waitForTimeout(1500);
   await shot(page, '07a-roadmap-ring');
+
+  // Third content point read -> the vote screen, then the feedback step.
+  await expect(page.getByTestId('vote-cta')).toBeVisible({ timeout: 15_000 });
+  await shot(page, '09a-vote-cta');
+  await page.getByTestId('vote-continue').click();
+  await page.getByTestId('fb-qayb').click();
+  await page.getByTestId('fb-send').click();
+  await expect(page.getByTestId('feedback')).toContainText(/Mahadsanid|Thank you/);
+  await shot(page, '09b-feedback');
+  await page.getByRole('button', { name: /Ku noqo khibradda|Back to the experience/ }).click();
+  await expect(page.getByTestId('feedback')).toHaveCount(0);
+
   await page.getByTestId('roadmap-next').click();
-  await expect(page.getByText(/2 \/ 8/)).toBeVisible();
+  await expect(page.getByTestId('roadmap-pos')).toHaveText(/2 \/ 8/);
   await page.getByTestId('roadmap-list').click();
-  await expect(page.getByRole('dialog')).toContainText(/Monthly coding workshop/);
+  await expect(page.getByRole('dialog')).toContainText(/Tababar koodh bille ah|Monthly coding workshop/);
   await expect(page.getByRole('dialog')).not.toContainText(/Completed ·|La dhammeeyay ·/);
   await shot(page, '07b-roadmap-list');
   await page.getByTestId('close-roadmap').click();

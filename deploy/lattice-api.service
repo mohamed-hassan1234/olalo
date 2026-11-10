@@ -1,0 +1,25 @@
+# systemd unit for the Lattice API.
+# Install: sudo cp deploy/lattice-api.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#          sudo systemctl enable --now lattice-api
+[Unit]
+Description=Lattice API (Zakariye Digital Universe)
+After=network-online.target mongod.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=lattice
+Group=lattice
+WorkingDirectory=/var/www/zakariye/apps/api
+EnvironmentFile=/etc/lattice/api.env
+ExecStart=/usr/bin/node dist/server.js
+Restart=always
+RestartSec=3
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
