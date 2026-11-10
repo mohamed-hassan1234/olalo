@@ -1,0 +1,36 @@
+{
+  "name": "zakariye-digital-universe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The Lattice — cinematic 3D experience, API and admin for the Zakariye Digital Universe project.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build:shared": "npm run build -w @lattice/shared",
+    "dev:api": "npm run dev -w @lattice/api",
+    "dev:web": "npm run dev -w @lattice/web",
+    "dev:admin": "npm run dev -w @lattice/admin",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "test": "npm run build:shared && npm run test --workspaces --if-present",
+    "build": "npm run build:shared && npm run build -w @lattice/api && npm run build -w @lattice/web && npm run build -w @lattice/admin",
+    "e2e": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.65.0",
+    "eslint": "10.14.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.14.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.2"
+  }
+}

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+*.log
+.data/
+.mongodb-binaries/
+tsconfig.tsbuildinfo
+next-env.d.ts
+backups/

@@ -1,0 +1,64 @@
+:root {
+  --void: #070b16;
+  --navy: #0a1230;
+  --panel: #0f1b3a;
+  --raised: #16264d;
+  --line: #2a3b63;
+  --primary: #2e8bff;
+  --primary-soft: #7fb8ff;
+  --primary-strong: #1f6fe0;
+  --emerald: #19d49a;
+  --gold: #f4d58d;
+  --amber: #f2b544;
+  --error: #ff5c6c;
+  --ink: #f2f6ff;
+  --ink-2: #a9b6cc;
+  --grey: #5b6b82;
+  color-scheme: dark;
+  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--void); color: var(--ink); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: 'Space Grotesk', 'Inter Variable', sans-serif; margin: 0; }
+h1 { font-size: 26px; }
+h2 { font-size: 16px; font-weight: 600; }
+a { color: var(--primary-soft); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--primary-soft); outline-offset: 2px; }
+.hud { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.muted { color: var(--ink-2); }
+.small { font-size: 12px; }
+.wrap { max-width: 1440px; margin: 0 auto; padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 20px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.between { justify-content: space-between; }
+.layout { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.layout > nav { flex: 1 1 180px; max-width: 220px; display: flex; flex-direction: column; gap: 4px; }
+.layout > main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.navbtn { height: 40px; padding: 0 12px; border-radius: 8px; border: 0; background: transparent; color: var(--ink-2); text-align: left; cursor: pointer; }
+.navbtn[aria-current='page'] { background: var(--raised); color: var(--ink); font-weight: 600; }
+.card { background: var(--panel); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.kpi { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 600; line-height: 32px; }
+.btn { height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; cursor: pointer; }
+.btn.primary { background: var(--primary-strong); border-color: var(--primary-strong); color: #fff; font-weight: 600; }
+.btn.danger { border-color: var(--error); color: #ffb3bb; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.chip { height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 13px; }
+.chip[aria-pressed='true'] { background: var(--ink); color: var(--void); font-weight: 600; border-color: var(--ink); }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.field input, .field select, .field textarea { background: var(--navy); border: 1px solid var(--line); border-radius: 8px; padding: 10px; color: var(--ink); font-size: 14px; }
+.banner-demo { background: var(--amber); color: #05070d; padding: 6px 12px; border-radius: 6px; font-weight: 600; }
+.alert { padding: 12px 14px; border-radius: 8px; border: 1px solid var(--line); flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px; }
+.alert.warning { border-color: rgba(242, 181, 68, .6); }
+.alert.info { border-color: rgba(127, 184, 255, .5); }
+.alert.ok { border-color: rgba(25, 212, 154, .5); }
+.err { color: #ffb3bb; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--raised); vertical-align: top; }
+th { color: var(--ink-2); font-weight: 500; }
+.scroll { overflow-x: auto; }
+.bar { height: 12px; border-radius: 3px; background: var(--raised); }
+.bar > div { height: 12px; border-radius: 3px; }
+pre { white-space: pre-wrap; word-break: break-word; font-size: 12px; background: var(--navy); padding: 10px; border-radius: 8px; max-height: 360px; overflow: auto; }
+.wrap > .alert { flex: none; }

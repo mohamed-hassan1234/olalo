@@ -1,0 +1,3 @@
+# Preview build: not launched. Remove this block only after launch approvals (see docs/LAUNCH.md).
+User-agent: *
+Disallow: /

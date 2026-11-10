@@ -1,0 +1,199 @@
+@import 'tailwindcss';
+
+/* Design tokens — proposal chapter 15, unchanged. */
+@theme {
+  --color-void: #05070d;
+  --color-navy: #0a1230;
+  --color-panel: #0f1b3a;
+  --color-raised: #16264d;
+  --color-line: #2a3b63;
+  --color-primary: #2e8bff;
+  --color-primary-soft: #7fb8ff;
+  /* Filled buttons with white text: #2E8BFF fails WCAG AA (3.4:1), #1F6FE0 passes (4.8:1). */
+  --color-primary-strong: #1f6fe0;
+  --color-midnimo: #19d49a;
+  --color-midnimo-soft: #5be3b8;
+  --color-hoggaan: #f4d58d;
+  --color-amber: #f2b544;
+  --color-error: #ff5c6c;
+  --color-ink: #f2f6ff;
+  --color-ink-2: #a9b6cc;
+  --color-ink-3: #8a98b0;
+  --color-dropped: #5b6b82;
+  --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+.hud {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.glass {
+  background: rgb(15 27 58 / 0.9);
+  border: 1px solid rgb(127 184 255 / 0.35);
+}
+@supports (backdrop-filter: blur(16px)) {
+  .glass {
+    background: rgb(15 27 58 / 0.82);
+    backdrop-filter: blur(16px);
+  }
+}
+[data-quality='lite'] .glass {
+  background: #0f1b3a;
+  backdrop-filter: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-soft);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes glyph {
+  0%,
+  100% {
+    transform: translateY(0) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotateY(180deg);
+  }
+}
+@keyframes scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+.anim-rise {
+  animation: rise 280ms var(--ease-ui) both;
+}
+.anim-fade {
+  animation: fade 400ms var(--ease-ui) both;
+}
+.anim-glyph {
+  animation: glyph 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+}
+
+/* Refinement pass: card pop-in and roadmap slide transitions. */
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slide-l {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slide-r {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: 200;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.anim-pop {
+  animation: pop 320ms var(--ease-ui) both;
+}
+.anim-slide-l {
+  animation: slide-l 320ms var(--ease-ui) both;
+}
+.anim-slide-r {
+  animation: slide-r 320ms var(--ease-ui) both;
+}
+.draw {
+  animation: draw 1.2s var(--ease-ui) both;
+}
