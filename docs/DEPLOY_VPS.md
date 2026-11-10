@@ -1,17 +1,19 @@
-# Deploy to a VPS: https://zakariye.elivateict.com
+# Deploy to a VPS: https://zdu.elivateict.com
 
 One Ubuntu server (22.04 or 24.04) runs everything:
 
 | URL | Served by |
 | --- | --- |
-| `https://zakariye.elivateict.com/` | nginx → static site (`apps/web/out`) |
-| `https://zakariye.elivateict.com/console/` | nginx → admin app (`apps/admin/dist`) |
+| `https://zdu.elivateict.com/` | nginx → static site (`apps/web/out`) |
+| `https://zdu.elivateict.com/console/` | nginx → admin app (`apps/admin/dist`) |
 | `/v1/*`, `/admin/v1/*` | nginx → Node API on `127.0.0.1:4100` (systemd `lattice-api`) |
 | MongoDB | local `mongod`, listening on 127.0.0.1 only, with authentication |
 
 ## 0. DNS
 
-At your DNS provider, add an **A record**: `zakariye` → your VPS public IP. Wait until `ping zakariye.elivateict.com` shows that IP.
+At your DNS provider (Namecheap BasicDNS for `elivateict.com`), add an **A record**: `zdu` → your VPS public IP (`104.237.2.66`). Wait until `nslookup zdu.elivateict.com` shows that IP.
+
+The site moved from `zakariye.elivateict.com` to `zdu.elivateict.com` in November 2026; see [DOMAIN_MIGRATION.md](DOMAIN_MIGRATION.md). The old hostname only redirects here.
 
 ## 1. Server packages (once)
 
@@ -58,8 +60,8 @@ NODE_ENV=production
 PORT=4100
 MONGODB_URI=mongodb://lattice:${MONGO_PW}@127.0.0.1:27017/lattice?authSource=admin
 MONGODB_DB=lattice
-PUBLIC_ORIGINS=https://zakariye.elivateict.com
-ADMIN_ORIGIN=https://zakariye.elivateict.com
+PUBLIC_ORIGINS=https://zdu.elivateict.com
+ADMIN_ORIGIN=https://zdu.elivateict.com
 TOTP_ENC_KEY=$(openssl rand -base64 32)
 COOKIE_SECURE=true
 TRUST_PROXY=1
@@ -76,8 +78,9 @@ sudo chmod 600 /etc/lattice/api.env && sudo chown lattice:lattice /etc/lattice/a
 ```bash
 cd /var/www/zakariye
 sudo cp deploy/lattice-api.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable lattice-api
-sudo cp deploy/nginx/zakariye.elivateict.com.conf /etc/nginx/sites-available/
-sudo ln -sf /etc/nginx/sites-available/zakariye.elivateict.com.conf /etc/nginx/sites-enabled/
+sudo cp deploy/nginx/lattice-ratelimit.conf /etc/nginx/conf.d/
+sudo cp deploy/nginx/zdu.elivateict.com.conf /etc/nginx/sites-available/
+sudo ln -sf /etc/nginx/sites-available/zdu.elivateict.com.conf /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 ```
 
@@ -90,7 +93,7 @@ cd /var/www/zakariye && bash deploy/deploy.sh
 ## 6. HTTPS
 
 ```bash
-sudo certbot --nginx -d zakariye.elivateict.com --redirect -m you@example.org --agree-tos -n
+sudo certbot --nginx -d zdu.elivateict.com --redirect -m you@example.org --agree-tos -n
 ```
 
 Replace `you@example.org` with your email address for certificate expiry notices.
@@ -102,7 +105,7 @@ cd /var/www/zakariye
 sudo bash -c 'set -a; . /etc/lattice/api.env; set +a; ADMIN_PASSWORD="choose-a-long-passphrase-here" npm run admin:create -w @lattice/api -- --email you@example.org --role owner'
 ```
 
-Then open `https://zakariye.elivateict.com/console/`, sign in, and turn on two-factor authentication under **Your account** (required for publishing and user management).
+Then open `https://zdu.elivateict.com/console/`, sign in, and turn on two-factor authentication under **Your account** (required for publishing and user management).
 
 ## Updating after new pushes
 
@@ -113,7 +116,7 @@ cd /var/www/zakariye && bash deploy/deploy.sh
 ## Checks and logs
 
 ```bash
-curl -s https://zakariye.elivateict.com/v1/health
+curl -s https://zdu.elivateict.com/v1/health
 sudo systemctl status lattice-api --no-pager
 sudo journalctl -u lattice-api -n 100 --no-pager
 sudo tail -n 50 /var/log/nginx/error.log

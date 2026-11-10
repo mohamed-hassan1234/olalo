@@ -3,7 +3,7 @@
 #   cd /var/www/zakariye && bash deploy/deploy.sh
 set -euo pipefail
 
-DOMAIN="${DOMAIN:-https://zakariye.elivateict.com}"
+DOMAIN="${DOMAIN:-https://zdu.elivateict.com}"
 
 echo "==> Pulling latest code"
 git pull --ff-only
